@@ -1,0 +1,8 @@
+aiohttp==3.9.1
+jsonlines==4.0.0
+numpy==1.26.2
+openai==1.3.6
+pandas==2.1.3
+requests==2.31.0
+tenacity==8.2.3
+tqdm==4.66.1
