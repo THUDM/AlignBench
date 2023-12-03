@@ -66,7 +66,7 @@ In order to effectively evaluate the quality of responses, AlignBench currently 
 
 * **Point-wise Grading.** For each model answer, the evaluation methods will give a final rating ranging from 1 to 10.
 
-* **Chain-of-Thought.** As the task of grading involves complex reasoning, we have adopted the Chain-of-Thought method to augment both the reliability and interpretability. Specifically, the evalautor LLM is instructed to generate explanations from multiple dimensions before providing a final rating.
+* **Chain-of-Thought.** As the task of grading involves complex reasoning, we have adopted the Chain-of-Thought method to augment both the reliability and interpretability. Specifically, the evaluator LLM is instructed to generate explanations from multiple dimensions before providing a final rating.
 
 + **Rule-calibrated Referencing.** For each question, we provide a high-quality reference answer. To guide the evaluator to compare the answer with the reference and generate more controllable scores, we provided detailed grading rules elaborating the relationship between score intervals and the answer's quality compared to the reference. The rules are included in the prompt.
 
