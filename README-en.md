@@ -6,7 +6,7 @@ This repository contains information, data and code of AlignBench: a comprehensi
 
 ## 🔥 Updates
 
-[2023.12.12] AlignBench [Website](llmbench.ai/align) is now officially online, welcome everyone to visit! You can use the *Submit* function on the website to perform evaluation with `CritiqueLLM` on AlignBench (results can be obtained in about 5 minutes).
+[2023.12.12] AlignBench [Website](https://llmbench.ai/align) is now officially online, welcome everyone to visit! You can use the *Submit* function on the website to perform evaluation with `CritiqueLLM` on AlignBench (results can be obtained in about 5 minutes).
 
 ## 📍 Introduction
 

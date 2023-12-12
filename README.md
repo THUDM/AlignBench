@@ -5,7 +5,7 @@ Read this in [English](README-en.md)
 AlignBench 是第一个多维度全面评估中文大模型对齐水平的评测基准。此仓库包含了 AlignBench 的介绍信息、数据和代码。
 
 ## 🔥 近期更新
-[2023.12.12] AlignBench [网站](llmbench.ai/align) 已经正式上线，欢迎大家访问！可以通过网站中的 *提交* 功能使用 `CritiqueLLM` 在 AlignBench 上进行评测（5分钟左右即可拿到结果）
+[2023.12.12] AlignBench [网站](https://llmbench.ai/align) 已经正式上线，欢迎大家访问！可以通过网站中的 *提交* 功能使用 `CritiqueLLM` 在 AlignBench 上进行评测（5分钟左右即可拿到结果）
 
 ## 📍 基本信息
 
