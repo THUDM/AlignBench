@@ -4,6 +4,10 @@
 
 This repository contains information, data and code of AlignBench: a comprehensive multi-dimensional benchmark for evaluating LLMs’ alignment in Chinese.
 
+## 🔥 Updates
+
+[2023.12.12] AlignBench [Website](llmbench.ai/align) is now officially online, welcome everyone to visit! You can use the *Submit* function on the website to perform evaluation with `CritiqueLLM` on AlignBench (results can be obtained in about 5 minutes).
+
 ## 📍 Introduction
 
 Alignment has become the critical step for instruction-tuned Large Language Models (LLMs) to become helpful assistants. However, effective evaluation of alignment for emerging Chinese LLMs has become a significant challenge, calling for diverse, open-ended, challenging and automatic evaluation tailored for alignment. To address this, we introduce AlignBench, a comprehensive multi-dimensional benchmark for evaluating LLMs’ alignment in Chinese. Equipped with a human-in-the-loop data curation pipeline, our benchmark employs a multi-dimensional rules-calibrated LLM-as-Judge with Chain-of-Thought to generate an explanation and a final rating, ensuring high reliability and interpretability. Furthermore, we developed a dedicated accompanied evaluator LLM---CritiqueLLM, which could recover 95% of GPT-4's evaluation ability and will be provided via accessible APIs to researchers for convenient evaluation of Chinese alignment.

@@ -4,6 +4,9 @@ Read this in [English](README-en.md)
 
 AlignBench 是第一个多维度全面评估中文大模型对齐水平的评测基准。此仓库包含了 AlignBench 的介绍信息、数据和代码。
 
+## 🔥 近期更新
+[2023.12.12] AlignBench [网站](llmbench.ai/align) 已经正式上线，欢迎大家访问！可以通过网站中的 *提交* 功能使用 `CritiqueLLM` 在 AlignBench 上进行评测（5分钟左右即可拿到结果）
+
 ## 📍 基本信息
 
 对于经过指令微调（instruction tuning）的大语言模型（LLMs），与人类意图的对齐程度已成为其实际应用的关键因素。然而，现有的评测基准已经不能准确反映模型在真实场景中的表现和与人类意图的对齐程度，如何对中文大语言模型的对齐水平进行有效评估已经成为了一个重大的挑战。在实际的应用场景中，我们需要采用多样化、开放式、具有挑战性且自动化的评估方法来专门评估模型的对齐水平。
@@ -19,7 +22,6 @@ AlignBench 的整体框架如上图所示，包括数据构建流程、体系化
 想了解 AlignBench 的更多详细信息，请参阅论文：[AlignBench](https://arxiv.org/abs/2311.18743)
 
 想了解 CritiqueLLM 的更多详细信息，请参阅论文：[CritiqueLLM](https://arxiv.org/abs/2311.18702)
-
 
 ---
 
