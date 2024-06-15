@@ -1,11 +1,11 @@
-# AlignBench: 多维度中文对齐评测基准
+# AlignBench: 多维度中文对齐评测基准 (ACL 2024)
 
 Read this in [English](README-en.md)
 
 AlignBench 是第一个多维度全面评估中文大模型对齐水平的评测基准。此仓库包含了 AlignBench 的介绍信息、数据和代码。
 
 ## 🔥 近期更新
-[2023.12.12] AlignBench [网站](https://llmbench.ai/align) 已经正式上线，欢迎大家访问！可以通过网站中的 *提交* 功能使用 `CritiqueLLM` 在 AlignBench 上进行评测（5分钟左右即可拿到结果）
+[2024.06.15] 更新了 AlignBench v1.1，对涉及较强事实性内容的测试指令的参考答案进行了一轮人工检查修正。其中，约 22% 的答案除了进行修正外，还补充了对应参考信息的来源网页（参考 `evidences` 字段）和引用的信息。欢迎大家继续检查 AlignBench 的答案并提出修改意见。
 
 ## 📍 基本信息
 
@@ -13,15 +13,11 @@ AlignBench 是第一个多维度全面评估中文大模型对齐水平的评测
 
 因此，我们构建了 AlignBench，这是一个用于评估中文大语言模型对齐性能的全面、多维度的评测基准。AlignBench 构建了人类参与的数据构建流程，来保证评测数据的动态更新。AlignBench 采用多维度、规则校准的模型评价方法（LLM-as-Judge），并且结合思维链（Chain-of-Thought）生成对模型回复的多维度分析和最终的综合评分，增强了评测的高可靠性和可解释性。
 
-此外，为了便于中文领域研究人员方便快捷地衡量模型的对齐程度，我们开发了一个专用的评测模型——CritiqueLLM，它能够恢复 GPT-4 95% 的评估能力，并在未来将通过易于访问的 API 向研究人员提供。
-
 ![Overall](assets/Overall.png)
 
 AlignBench 的整体框架如上图所示，包括数据构建流程、体系化的分类以及多维度、规则校准的 LLM-as-Judge 评估方法。
 
 想了解 AlignBench 的更多详细信息，请参阅论文：[AlignBench](https://arxiv.org/abs/2311.18743)
-
-想了解 CritiqueLLM 的更多详细信息，请参阅论文：[CritiqueLLM](https://arxiv.org/abs/2311.18702)
 
 ---
 
@@ -50,15 +46,26 @@ AlignBench 的整体框架如上图所示，包括数据构建流程、体系化
 - `question` (string)：实际用户查询。
 - `reference` (string)：这提供了对问题的参考或标准答案。
 
-以下是`数学能力`类别的一个例子。
+以下是`专业能力`类别的一个例子。
 
 ```json
 {
-    "question_id": 1,
-    "category": "数学计算",
-    "subcategory": "初等数学",
-    "question": "有一串彩珠，按“2红3绿4黄”的顺序依次排列。第600颗是什么颜色?",
-    "reference": "一组\"2红3绿4黄\"共有9颗珠子。600除以9的商是66，余数是6。因此，第600颗珠子是在第67组的第6颗，即\"2红3绿4黄\"中的第6颗，也就是黄色。所以，第600颗珠子是黄色。"
+    "question_id": 8,
+    "category": "专业能力",
+    "subcategory": "历史",
+    "question": "麦哲伦航队在全球旅行时使用了六分仪测量经纬度么？",
+    "reference": "不，麦哲伦航队在全球旅行时没有使用六分仪来测量经纬度。麦哲伦环球航行的时间是1519年—1522年，六分仪的原理由伊萨克·牛顿提出，而牛顿的出生时间是1643年1月4日，所以再麦哲伦航行的时间六分仪尚未被发明，使用六分仪是不可能的。",
+    "evidences":
+    [
+        {
+            "url": "https://baike.baidu.com/item/%E6%96%90%E8%BF%AA%E5%8D%97%C2%B7%E9%BA%A6%E5%93%B2%E4%BC%A6/7397066#SnippetTab\n\n",
+            "quote": "1519年，率领船队开始环球航行。1521年4月27日夜间，麦哲伦在菲律宾死于部落冲突。船队在他死后继续向西航行，回到欧洲，并完成了人类首次环球航行。\n\n"
+        },
+        {
+            "url": "https://baike.baidu.com/item/%E5%85%AD%E5%88%86%E4%BB%AA/749782?fr=ge_ala#3",
+            "quote": "六分仪的原理由伊萨克·牛顿提出，1732年，英国海军开始将原始仪器安装在船艇上，因为当时最大测量角度是90度，因此被称为八分仪。1757年，约翰·坎贝尔船长将八分仪的测量夹角提高到120度，发展成为六分仪。其后六分仪的测量夹角虽然逐渐提升到144度，但是其名称却一直保持不变。"
+        }
+    ]
 }
 ```
 
@@ -99,7 +106,7 @@ AlignBench 的整体框架如上图所示，包括数据构建流程、体系化
    python get_answers.py \
        --model do_nothing \
        --workers 2 \
-       --question-file data/data_release.jsonl \
+       --question-file data/data_v1.1_release.jsonl \
        --save-dir data/model_answer
    ```
 
@@ -107,7 +114,7 @@ AlignBench 的整体框架如上图所示，包括数据构建流程、体系化
 
 2. **步骤二** 调用评价模型获取分析和打分
 
-   目前我们使用 `gpt-4-0613` 作为评测模型，之后为了方便中文社区，我们计划以 API 的形式开放 `CritiqueLLM` 作为 `gpt-4` 的替代评测模型给研究人员使用。
+   目前我们使用 `gpt-4-0613` 作为评测模型。
 
    首先，在`config/multi-dimension.json`中填写您的 GPT-4 API 密钥。
 
@@ -141,565 +148,366 @@ AlignBench 的整体框架如上图所示，包括数据构建流程、体系化
 
 ## 📂 排行榜
 
-我们在 AlignBench 上分别使用`gpt-4-0613`和`CritiqueLLM` 作为打分模型对 17 个支持汉语的大语言模型（LLMs）进行了系统评测，结果显示和`CritiqueLLM` 和`gpt-4-0613` 具有很高的一致性。
+我们在 AlignBench v1.1 上使用 `gpt-4-0613` 作为打分模型对当前一系列支持汉语的大语言模型（LLMs）进行了系统评测。感谢 [清华大学基础模型中心](https://fm.ai.tsinghua.edu.cn/) 的 [SuperBench](https://fm.ai.tsinghua.edu.cn/superbench/#/) 评估团队采用 AlignBench v1.1 作为周期性评估的一部分。后续希望进行评估的模型，可以利用 `gpt-4-0613` 进行自测评估并汇报，或与 SuperBench 评估团队进行联系。
 
-`gpt-4-0613` 的评测结果：
+`gpt-4-0613` 的评测结果（2024.06更新）：
 
-<table class="tg">
-<thead>
+<table class="tg"><thead>
   <tr>
-    <td class="tg-nrix" rowspan="2">model</td>
-    <td class="tg-nrix" rowspan="2">Overall</td>
-    <th class="tg-nrix" colspan="3">Reasoning 中文推理</th>
-    <th class="tg-nrix" colspan="7">Language 中文语言</th>
+    <th class="tg-0pky" rowspan="3">AlignBench v1.1</th>
+    <th class="tg-c3ow" rowspan="2">Overall</th>
+    <th class="tg-c3ow" colspan="3">Reasoning 中文推理</th>
+    <th class="tg-c3ow" colspan="7">Language 中文语言</th>
   </tr>
   <tr>
-    <th class="tg-nrix">Avg.</th>
-    <th class="tg-nrix">Math.</th>
-    <th class="tg-nrix">Logi.</th>
-    <th class="tg-nrix">Avg.</th>
-    <th class="tg-nrix">Fund.</th>
-    <th class="tg-nrix">Chi.</th>
-    <th class="tg-nrix">Open.</th>
-    <th class="tg-nrix">Writ.</th>
-    <th class="tg-nrix">Role.</th>
-    <th class="tg-nrix">Pro.</th>
+    <th class="tg-c3ow">Avg.</th>
+    <th class="tg-c3ow">Math.</th>
+    <th class="tg-c3ow">Logi.</th>
+    <th class="tg-c3ow">Avg.</th>
+    <th class="tg-c3ow">Fund.</th>
+    <th class="tg-c3ow">Chi.</th>
+    <th class="tg-c3ow">Open.</th>
+    <th class="tg-c3ow">Writ.</th>
+    <th class="tg-c3ow">Role.</th>
+    <th class="tg-c3ow">Pro.</th>
   </tr>
-</thead>
+  <tr>
+    <th class="tg-c3ow">总分</th>
+    <th class="tg-c3ow">推理<br>总分</th>
+    <th class="tg-c3ow">数学<br>计算</th>
+    <th class="tg-c3ow">逻辑<br>推理</th>
+    <th class="tg-c3ow">语言<br>总分</th>
+    <th class="tg-c3ow">基本<br>任务</th>
+    <th class="tg-c3ow">中文<br>理解</th>
+    <th class="tg-c3ow">综合<br>问答</th>
+    <th class="tg-c3ow">文本<br>写作</th>
+    <th class="tg-c3ow">角色<br>扮演</th>
+    <th class="tg-c3ow">专业<br>能力</th>
+  </tr></thead>
 <tbody>
   <tr>
-    <td class="tg-nrix">模型</td>
-    <td class="tg-nrix">总分</td>
-    <td class="tg-nrix">推理<br>总分</td>
-    <td class="tg-nrix">数学<br>计算</td>
-    <td class="tg-nrix">逻辑<br>推理</td>
-    <td class="tg-nrix">语言<br>总分</td>
-    <td class="tg-nrix">基本<br>任务</td>
-    <td class="tg-nrix">中文<br>理解</td>
-    <td class="tg-nrix">综合<br>问答</td>
-    <td class="tg-nrix">文本<br>写作</td>
-    <td class="tg-nrix">角色<br>扮演</td>
-    <td class="tg-nrix">专业<br>能力</td>
+    <td class="tg-0pky">GPT-40</td>
+    <td class="tg-c3ow">8.38</td>
+    <td class="tg-c3ow">8.44</td>
+    <td class="tg-c3ow">8.62</td>
+    <td class="tg-c3ow">8.25</td>
+    <td class="tg-c3ow">8.32</td>
+    <td class="tg-c3ow">8.25</td>
+    <td class="tg-c3ow">7.97</td>
+    <td class="tg-c3ow">8.79</td>
+    <td class="tg-c3ow">7.95</td>
+    <td class="tg-c3ow">8.35</td>
+    <td class="tg-c3ow">8.62</td>
   </tr>
   <tr>
-    <td class="tg-nrix">gpt-4-1106-preview</td>
-    <td class="tg-wa1i">8.01</td>
-    <td class="tg-wa1i">7.73</td>
-    <td class="tg-wa1i">7.8</td>
-    <td class="tg-wa1i">7.66</td>
-    <td class="tg-wa1i">8.29</td>
-    <td class="tg-wa1i">7.99</td>
-    <td class="tg-nrix">7.33</td>
-    <td class="tg-wa1i">8.61</td>
-    <td class="tg-wa1i">8.67</td>
-    <td class="tg-wa1i">8.47</td>
-    <td class="tg-wa1i">8.65</td>
+    <td class="tg-0pky">通义千问2.5</td>
+    <td class="tg-c3ow">8.17</td>
+    <td class="tg-c3ow">7.79</td>
+    <td class="tg-c3ow">7.97</td>
+    <td class="tg-c3ow">7.60</td>
+    <td class="tg-c3ow">8.55</td>
+    <td class="tg-c3ow">7.87</td>
+    <td class="tg-c3ow">8.40</td>
+    <td class="tg-c3ow">8.94</td>
+    <td class="tg-c3ow">8.60</td>
+    <td class="tg-c3ow">8.73</td>
+    <td class="tg-c3ow">8.76</td>
   </tr>
   <tr>
-    <td class="tg-nrix">gpt-4-0613</td>
-    <td class="tg-wa1i">7.53</td>
-    <td class="tg-nrix">7.47</td>
-    <td class="tg-nrix">7.56</td>
-    <td class="tg-nrix">7.37</td>
-    <td class="tg-nrix">7.59</td>
-    <td class="tg-nrix">7.81</td>
-    <td class="tg-nrix">6.93</td>
-    <td class="tg-nrix">7.42</td>
-    <td class="tg-nrix">7.93</td>
-    <td class="tg-nrix">7.51</td>
-    <td class="tg-nrix">7.94</td>
+    <td class="tg-0pky">GPT-4 Turbo-20240409</td>
+    <td class="tg-c3ow">8.00</td>
+    <td class="tg-c3ow">8.00</td>
+    <td class="tg-c3ow">8.32</td>
+    <td class="tg-c3ow">7.67</td>
+    <td class="tg-c3ow">8.01</td>
+    <td class="tg-c3ow">7.60</td>
+    <td class="tg-c3ow">7.57</td>
+    <td class="tg-c3ow">8.37</td>
+    <td class="tg-c3ow">7.75</td>
+    <td class="tg-c3ow">8.18</td>
+    <td class="tg-c3ow">8.59</td>
   </tr>
   <tr>
-    <td class="tg-nrix">chatglm-turbo（智谱清言）</td>
-    <td class="tg-wa1i">6.24</td>
-    <td class="tg-nrix">5</td>
-    <td class="tg-nrix">4.74</td>
-    <td class="tg-nrix">5.26</td>
-    <td class="tg-nrix">7.49</td>
-    <td class="tg-nrix">6.82</td>
-    <td class="tg-nrix">7.17</td>
-    <td class="tg-nrix">8.16</td>
-    <td class="tg-nrix">7.77</td>
-    <td class="tg-nrix">7.76</td>
-    <td class="tg-nrix">7.24</td>
+    <td class="tg-0pky">Abab 6.5(MoE)</td>
+    <td class="tg-c3ow">7.94</td>
+    <td class="tg-c3ow">7.73</td>
+    <td class="tg-c3ow">7.82</td>
+    <td class="tg-c3ow">7.63</td>
+    <td class="tg-c3ow">8.16</td>
+    <td class="tg-c3ow">8.21</td>
+    <td class="tg-c3ow">7.81</td>
+    <td class="tg-c3ow">8.31</td>
+    <td class="tg-c3ow">8.14</td>
+    <td class="tg-c3ow">8.24</td>
+    <td class="tg-c3ow">8.22</td>
   </tr>
   <tr>
-    <td class="tg-nrix">erniebot-3.0（文心一言）</td>
-    <td class="tg-wa1i">6.14</td>
-    <td class="tg-nrix">5.15</td>
-    <td class="tg-nrix">5.03</td>
-    <td class="tg-nrix">5.27</td>
-    <td class="tg-nrix">7.13</td>
-    <td class="tg-nrix">6.62</td>
-    <td class="tg-wa1i">7.6</td>
-    <td class="tg-nrix">7.26</td>
-    <td class="tg-nrix">7.56</td>
-    <td class="tg-nrix">6.83</td>
-    <td class="tg-nrix">6.9</td>
+    <td class="tg-0pky">GLM-4-0520</td>
+    <td class="tg-c3ow">7.89</td>
+    <td class="tg-c3ow">7.66</td>
+    <td class="tg-c3ow">7.67</td>
+    <td class="tg-c3ow">7.64</td>
+    <td class="tg-c3ow">8.13</td>
+    <td class="tg-c3ow">7.78</td>
+    <td class="tg-c3ow">8.22</td>
+    <td class="tg-c3ow">8.21</td>
+    <td class="tg-c3ow">8.09</td>
+    <td class="tg-c3ow">7.99</td>
+    <td class="tg-c3ow">8.47</td>
   </tr>
   <tr>
-    <td class="tg-nrix">gpt-3.5-turbo-0613</td>
-    <td class="tg-wa1i">6.08</td>
-    <td class="tg-nrix">5.35</td>
-    <td class="tg-nrix">5.68</td>
-    <td class="tg-nrix">5.02</td>
-    <td class="tg-nrix">6.82</td>
-    <td class="tg-nrix">6.71</td>
-    <td class="tg-nrix">5.81</td>
-    <td class="tg-nrix">7.29</td>
-    <td class="tg-nrix">7.03</td>
-    <td class="tg-nrix">7.28</td>
-    <td class="tg-nrix">6.77</td>
+    <td class="tg-0pky">Sensechat 5.0</td>
+    <td class="tg-c3ow">7.89</td>
+    <td class="tg-c3ow">7.54</td>
+    <td class="tg-c3ow">7.96</td>
+    <td class="tg-c3ow">7.12</td>
+    <td class="tg-c3ow">8.23</td>
+    <td class="tg-c3ow">8.27</td>
+    <td class="tg-c3ow">7.69</td>
+    <td class="tg-c3ow">8.45</td>
+    <td class="tg-c3ow">8.15</td>
+    <td class="tg-c3ow">8.53</td>
+    <td class="tg-c3ow">8.29</td>
   </tr>
   <tr>
-    <td class="tg-nrix">chatglm-pro（智谱清言）</td>
-    <td class="tg-wa1i">5.83</td>
-    <td class="tg-nrix">4.65</td>
-    <td class="tg-nrix">4.54</td>
-    <td class="tg-nrix">4.75</td>
-    <td class="tg-nrix">7.01</td>
-    <td class="tg-nrix">6.51</td>
-    <td class="tg-nrix">6.76</td>
-    <td class="tg-nrix">7.47</td>
-    <td class="tg-nrix">7.07</td>
-    <td class="tg-nrix">7.34</td>
-    <td class="tg-nrix">6.89</td>
+    <td class="tg-0pky">Qwen 1.5-110B-Chat</td>
+    <td class="tg-c3ow">7.86</td>
+    <td class="tg-c3ow">7.49</td>
+    <td class="tg-c3ow">7.69</td>
+    <td class="tg-c3ow">7.28</td>
+    <td class="tg-c3ow">8.23</td>
+    <td class="tg-c3ow">7.76</td>
+    <td class="tg-c3ow">8.12</td>
+    <td class="tg-c3ow">8.46</td>
+    <td class="tg-c3ow">8.20</td>
+    <td class="tg-c3ow">8.30</td>
+    <td class="tg-c3ow">8.52</td>
   </tr>
   <tr>
-    <td class="tg-nrix">spark_desk_v2（讯飞星火）</td>
-    <td class="tg-wa1i">5.74</td>
-    <td class="tg-nrix">4.73</td>
-    <td class="tg-nrix">4.71</td>
-    <td class="tg-nrix">4.74</td>
-    <td class="tg-nrix">6.76</td>
-    <td class="tg-nrix">5.84</td>
-    <td class="tg-nrix">6.97</td>
-    <td class="tg-nrix">7.29</td>
-    <td class="tg-nrix">7.18</td>
-    <td class="tg-nrix">6.92</td>
-    <td class="tg-nrix">6.34</td>
+    <td class="tg-0pky">文心一言4.0</td>
+    <td class="tg-c3ow">7.85</td>
+    <td class="tg-c3ow">7.81</td>
+    <td class="tg-c3ow">7.60</td>
+    <td class="tg-c3ow">8.02</td>
+    <td class="tg-c3ow">7.89</td>
+    <td class="tg-c3ow">7.33</td>
+    <td class="tg-c3ow">8.35</td>
+    <td class="tg-c3ow">8.16</td>
+    <td class="tg-c3ow">8.11</td>
+    <td class="tg-c3ow">8.07</td>
+    <td class="tg-c3ow">7.29</td>
   </tr>
   <tr>
-    <td class="tg-nrix">qwen-14b-chat</td>
-    <td class="tg-wa1i">5.72</td>
-    <td class="tg-nrix">4.81</td>
-    <td class="tg-nrix">4.91</td>
-    <td class="tg-nrix">4.71</td>
-    <td class="tg-nrix">6.63</td>
-    <td class="tg-nrix">6.9</td>
-    <td class="tg-nrix">6.36</td>
-    <td class="tg-nrix">6.74</td>
-    <td class="tg-nrix">6.64</td>
-    <td class="tg-nrix">6.59</td>
-    <td class="tg-nrix">6.56</td>
+    <td class="tg-0pky">Yi-Large</td>
+    <td class="tg-c3ow">7.80</td>
+    <td class="tg-c3ow">7.44</td>
+    <td class="tg-c3ow">7.65</td>
+    <td class="tg-c3ow">7.23</td>
+    <td class="tg-c3ow">8.17</td>
+    <td class="tg-c3ow">7.81</td>
+    <td class="tg-c3ow">7.85</td>
+    <td class="tg-c3ow">8.51</td>
+    <td class="tg-c3ow">7.96</td>
+    <td class="tg-c3ow">8.18</td>
+    <td class="tg-c3ow">8.69</td>
   </tr>
   <tr>
-    <td class="tg-nrix">baichuan2-13b-chat</td>
-    <td class="tg-wa1i">5.25</td>
-    <td class="tg-nrix">3.92</td>
-    <td class="tg-nrix">3.76</td>
-    <td class="tg-nrix">4.07</td>
-    <td class="tg-nrix">6.59</td>
-    <td class="tg-nrix">6.22</td>
-    <td class="tg-nrix">6.05</td>
-    <td class="tg-nrix">7.11</td>
-    <td class="tg-nrix">6.97</td>
-    <td class="tg-nrix">6.75</td>
-    <td class="tg-nrix">6.43</td>
+    <td class="tg-0pky">DeepSeek-V2</td>
+    <td class="tg-c3ow">7.72</td>
+    <td class="tg-c3ow">7.26</td>
+    <td class="tg-c3ow">7.51</td>
+    <td class="tg-c3ow">7.00</td>
+    <td class="tg-c3ow">8.19</td>
+    <td class="tg-c3ow">8.10</td>
+    <td class="tg-c3ow">7.83</td>
+    <td class="tg-c3ow">8.16</td>
+    <td class="tg-c3ow">8.20</td>
+    <td class="tg-c3ow">8.41</td>
+    <td class="tg-c3ow">8.44</td>
   </tr>
   <tr>
-    <td class="tg-nrix">chatglm3-6b</td>
-    <td class="tg-wa1i">4.97</td>
-    <td class="tg-nrix">3.85</td>
-    <td class="tg-nrix">3.55</td>
-    <td class="tg-nrix">4.14</td>
-    <td class="tg-nrix">6.1</td>
-    <td class="tg-nrix">5.75</td>
-    <td class="tg-nrix">5.29</td>
-    <td class="tg-nrix">6.71</td>
-    <td class="tg-nrix">6.83</td>
-    <td class="tg-nrix">6.28</td>
-    <td class="tg-nrix">5.73</td>
+    <td class="tg-0pky">GLM-4-Air</td>
+    <td class="tg-c3ow">7.58</td>
+    <td class="tg-c3ow">7.20</td>
+    <td class="tg-c3ow">7.19</td>
+    <td class="tg-c3ow">7.20</td>
+    <td class="tg-c3ow">7.97</td>
+    <td class="tg-c3ow">7.53</td>
+    <td class="tg-c3ow">7.71</td>
+    <td class="tg-c3ow">8.18</td>
+    <td class="tg-c3ow">7.97</td>
+    <td class="tg-c3ow">8.10</td>
+    <td class="tg-c3ow">8.32</td>
   </tr>
   <tr>
-    <td class="tg-nrix">baichuan2-7b-chat</td>
-    <td class="tg-wa1i">4.97</td>
-    <td class="tg-nrix">3.66</td>
-    <td class="tg-nrix">3.56</td>
-    <td class="tg-nrix">3.75</td>
-    <td class="tg-nrix">6.28</td>
-    <td class="tg-nrix">5.81</td>
-    <td class="tg-nrix">5.5</td>
-    <td class="tg-nrix">7.13</td>
-    <td class="tg-nrix">6.84</td>
-    <td class="tg-nrix">6.53</td>
-    <td class="tg-nrix">5.84</td>
+    <td class="tg-0pky">Claude 3 Oous</td>
+    <td class="tg-c3ow">7.53</td>
+    <td class="tg-c3ow">7.19</td>
+    <td class="tg-c3ow">7.27</td>
+    <td class="tg-c3ow">7.11</td>
+    <td class="tg-c3ow">7.87</td>
+    <td class="tg-c3ow">7.94</td>
+    <td class="tg-c3ow">7.71</td>
+    <td class="tg-c3ow">8.21</td>
+    <td class="tg-c3ow">7.61</td>
+    <td class="tg-c3ow">7.73</td>
+    <td class="tg-c3ow">8.02</td>
   </tr>
   <tr>
-    <td class="tg-nrix">internlm-20b</td>
-    <td class="tg-wa1i">4.96</td>
-    <td class="tg-nrix">3.66</td>
-    <td class="tg-nrix">3.39</td>
-    <td class="tg-nrix">3.92</td>
-    <td class="tg-nrix">6.26</td>
-    <td class="tg-nrix">5.96</td>
-    <td class="tg-nrix">5.5</td>
-    <td class="tg-nrix">7.18</td>
-    <td class="tg-nrix">6.19</td>
-    <td class="tg-nrix">6.49</td>
-    <td class="tg-nrix">6.22</td>
+    <td class="tg-0pky">Gemini 1.5 Pro</td>
+    <td class="tg-c3ow">7.47</td>
+    <td class="tg-c3ow">7.07</td>
+    <td class="tg-c3ow">7.77</td>
+    <td class="tg-c3ow">6.36</td>
+    <td class="tg-c3ow">7.87</td>
+    <td class="tg-c3ow">7.31</td>
+    <td class="tg-c3ow">7.22</td>
+    <td class="tg-c3ow">8.55</td>
+    <td class="tg-c3ow">7.83</td>
+    <td class="tg-c3ow">7.79</td>
+    <td class="tg-c3ow">8.52</td>
   </tr>
   <tr>
-    <td class="tg-nrix">qwen-7b-chat</td>
-    <td class="tg-wa1i">4.91</td>
-    <td class="tg-nrix">3.73</td>
-    <td class="tg-nrix">3.62</td>
-    <td class="tg-nrix">3.83</td>
-    <td class="tg-nrix">6.09</td>
-    <td class="tg-nrix">6.4</td>
-    <td class="tg-nrix">5.74</td>
-    <td class="tg-nrix">6.26</td>
-    <td class="tg-nrix">6.31</td>
-    <td class="tg-nrix">6.19</td>
-    <td class="tg-nrix">5.66</td>
+    <td class="tg-0pky">Baichuan 4</td>
+    <td class="tg-c3ow">7.45</td>
+    <td class="tg-c3ow">7.28</td>
+    <td class="tg-c3ow">7.34</td>
+    <td class="tg-c3ow">7.22</td>
+    <td class="tg-c3ow">7.63</td>
+    <td class="tg-c3ow">7.34</td>
+    <td class="tg-c3ow">7.40</td>
+    <td class="tg-c3ow">7.74</td>
+    <td class="tg-c3ow">7.60</td>
+    <td class="tg-c3ow">7.36</td>
+    <td class="tg-c3ow">8.33</td>
   </tr>
   <tr>
-    <td class="tg-nrix">chatglm2-6b</td>
-    <td class="tg-wa1i">4.48</td>
-    <td class="tg-nrix">3.39</td>
-    <td class="tg-nrix">3.16</td>
-    <td class="tg-nrix">3.61</td>
-    <td class="tg-nrix">5.58</td>
-    <td class="tg-nrix">4.91</td>
-    <td class="tg-nrix">4.52</td>
-    <td class="tg-nrix">6.66</td>
-    <td class="tg-nrix">6.25</td>
-    <td class="tg-nrix">6.08</td>
-    <td class="tg-nrix">5.08</td>
+    <td class="tg-0pky">Llama 3-70B</td>
+    <td class="tg-c3ow">7.42</td>
+    <td class="tg-c3ow">7.02</td>
+    <td class="tg-c3ow">7.18</td>
+    <td class="tg-c3ow">6.86</td>
+    <td class="tg-c3ow">7.82</td>
+    <td class="tg-c3ow">7.75</td>
+    <td class="tg-c3ow">6.63</td>
+    <td class="tg-c3ow">8.65</td>
+    <td class="tg-c3ow">7.80</td>
+    <td class="tg-c3ow">8.02</td>
+    <td class="tg-c3ow">8.08</td>
   </tr>
   <tr>
-    <td class="tg-nrix">internlm-chat-7b</td>
-    <td class="tg-wa1i">3.65</td>
-    <td class="tg-nrix">2.56</td>
-    <td class="tg-nrix">2.45</td>
-    <td class="tg-nrix">2.66</td>
-    <td class="tg-nrix">4.75</td>
-    <td class="tg-nrix">4.34</td>
-    <td class="tg-nrix">4.09</td>
-    <td class="tg-nrix">5.82</td>
-    <td class="tg-nrix">4.89</td>
-    <td class="tg-nrix">5.32</td>
-    <td class="tg-nrix">4.06</td>
+    <td class="tg-0pky">Gemini 1.5 Flash</td>
+    <td class="tg-c3ow">7.38</td>
+    <td class="tg-c3ow">7.29</td>
+    <td class="tg-c3ow">7.96</td>
+    <td class="tg-c3ow">6.61</td>
+    <td class="tg-c3ow">7.47</td>
+    <td class="tg-c3ow">6.75</td>
+    <td class="tg-c3ow">7.16</td>
+    <td class="tg-c3ow">8.05</td>
+    <td class="tg-c3ow">6.96</td>
+    <td class="tg-c3ow">7.73</td>
+    <td class="tg-c3ow">8.16</td>
   </tr>
   <tr>
-    <td class="tg-nrix">Chinese-llama-2-7b-chat</td>
-    <td class="tg-wa1i">3.57</td>
-    <td class="tg-nrix">2.68</td>
-    <td class="tg-nrix">2.29</td>
-    <td class="tg-nrix">3.07</td>
-    <td class="tg-nrix">4.46</td>
-    <td class="tg-nrix">4.31</td>
-    <td class="tg-nrix">4.26</td>
-    <td class="tg-nrix">4.5</td>
-    <td class="tg-nrix">4.63</td>
-    <td class="tg-nrix">4.91</td>
-    <td class="tg-nrix">4.13</td>
+    <td class="tg-0pky">WizardLM-2-8x22B</td>
+    <td class="tg-c3ow">7.34</td>
+    <td class="tg-c3ow">6.99</td>
+    <td class="tg-c3ow">6.99</td>
+    <td class="tg-c3ow">6.98</td>
+    <td class="tg-c3ow">7.70</td>
+    <td class="tg-c3ow">7.57</td>
+    <td class="tg-c3ow">6.60</td>
+    <td class="tg-c3ow">8.40</td>
+    <td class="tg-c3ow">7.60</td>
+    <td class="tg-c3ow">8.17</td>
+    <td class="tg-c3ow">7.83</td>
   </tr>
   <tr>
-    <td class="tg-nrix">llama-2-13b-Chinese-chat</td>
-    <td class="tg-wa1i">3.35</td>
-    <td class="tg-nrix">2.47</td>
-    <td class="tg-nrix">2.21</td>
-    <td class="tg-nrix">2.73</td>
-    <td class="tg-nrix">4.23</td>
-    <td class="tg-nrix">4.13</td>
-    <td class="tg-nrix">3.31</td>
-    <td class="tg-nrix">4.79</td>
-    <td class="tg-nrix">3.93</td>
-    <td class="tg-nrix">4.53</td>
-    <td class="tg-nrix">4.71</td>
-  </tr>
-</tbody>
-</table>
-
-`CritiqueLLM` 的评测结果：
-
-<table>
-<thead>
-  <tr>
-    <td rowspan="2">model</td>
-    <td rowspan="2">Overall</td>
-    <th colspan="3">Reasoning 中文推理</th>
-    <th colspan="7">Language 中文语言</th>
+    <td class="tg-0pky">moonshot-v1-8k</td>
+    <td class="tg-c3ow">7.31</td>
+    <td class="tg-c3ow">6.76</td>
+    <td class="tg-c3ow">6.94</td>
+    <td class="tg-c3ow">6.58</td>
+    <td class="tg-c3ow">7.86</td>
+    <td class="tg-c3ow">7.56</td>
+    <td class="tg-c3ow">7.83</td>
+    <td class="tg-c3ow">7.82</td>
+    <td class="tg-c3ow">7.76</td>
+    <td class="tg-c3ow">7.93</td>
+    <td class="tg-c3ow">8.25</td>
   </tr>
   <tr>
-    <th>Avg.</th>
-    <th>Math.</th>
-    <th>Logi.</th>
-    <th>Avg.</th>
-    <th>Fund.</th>
-    <th>Chi.</th>
-    <th>Open.</th>
-    <th>Writ.</th>
-    <th>Role.</th>
-    <th>Pro.</th>
-  </tr>
-</thead>
-<tbody>
-  <tr>
-    <td>模型</td>
-    <td>总分</td>
-    <td>推理<br>总分</td>
-    <td>数学<br>计算</td>
-    <td>逻辑<br>推理</td>
-    <td>语言<br>总分</td>
-    <td>基本<br>任务</td>
-    <td>中文<br>理解</td>
-    <td>综合<br>问答</td>
-    <td>文本<br>写作</td>
-    <td>角色<br>扮演</td>
-    <td>专业<br>能力</td>
+    <td class="tg-0pky">Step-1-32k</td>
+    <td class="tg-c3ow">7.08</td>
+    <td class="tg-c3ow">6.43</td>
+    <td class="tg-c3ow">6.77</td>
+    <td class="tg-c3ow">6.09</td>
+    <td class="tg-c3ow">7.72</td>
+    <td class="tg-c3ow">8.09</td>
+    <td class="tg-c3ow">7.74</td>
+    <td class="tg-c3ow">7.34</td>
+    <td class="tg-c3ow">7.56</td>
+    <td class="tg-c3ow">7.74</td>
+    <td class="tg-c3ow">7.86</td>
   </tr>
   <tr>
-    <td>gpt-4-1106-preview</td>
-    <td>7.58</td>
-    <td>7.11</td>
-    <td>7.39</td>
-    <td>6.83</td>
-    <td>8.05</td>
-    <td>7.69</td>
-    <td>7.07</td>
-    <td>8.66</td>
-    <td>8.23</td>
-    <td>8.08</td>
-    <td>8.55</td>
+    <td class="tg-0pky">讯飞星火3.5</td>
+    <td class="tg-c3ow">6.90</td>
+    <td class="tg-c3ow">6.47</td>
+    <td class="tg-c3ow">7.30</td>
+    <td class="tg-c3ow">5.63</td>
+    <td class="tg-c3ow">7.33</td>
+    <td class="tg-c3ow">7.28</td>
+    <td class="tg-c3ow">7.71</td>
+    <td class="tg-c3ow">7.24</td>
+    <td class="tg-c3ow">7.12</td>
+    <td class="tg-c3ow">7.41</td>
+    <td class="tg-c3ow">7.24</td>
   </tr>
   <tr>
-    <td>gpt-4-0613</td>
-    <td>6.83</td>
-    <td>6.41</td>
-    <td>6.49</td>
-    <td>6.33</td>
-    <td>7.26</td>
-    <td>7.16</td>
-    <td>6.76</td>
-    <td>7.26</td>
-    <td>7.31</td>
-    <td>7.48</td>
-    <td>7.56</td>
+    <td class="tg-0pky">Claude 3 Sonnet</td>
+    <td class="tg-c3ow">6.71</td>
+    <td class="tg-c3ow">6.17</td>
+    <td class="tg-c3ow">6.24</td>
+    <td class="tg-c3ow">6.10</td>
+    <td class="tg-c3ow">7.25</td>
+    <td class="tg-c3ow">7.56</td>
+    <td class="tg-c3ow">6.39</td>
+    <td class="tg-c3ow">7.37</td>
+    <td class="tg-c3ow">7.14</td>
+    <td class="tg-c3ow">7.76</td>
+    <td class="tg-c3ow">7.26</td>
   </tr>
   <tr>
-    <td>chatglm-turbo（智谱清言）</td>
-    <td>6.36</td>
-    <td>4.99</td>
-    <td>4.88</td>
-    <td>5.09</td>
-    <td>7.73</td>
-    <td>7.5</td>
-    <td>7.03</td>
-    <td>8.45</td>
-    <td>8.05</td>
-    <td>7.67</td>
-    <td>7.7</td>
+    <td class="tg-0pky">Mixtral-8x22B (MoE)</td>
+    <td class="tg-c3ow">6.48</td>
+    <td class="tg-c3ow">6.23</td>
+    <td class="tg-c3ow">6.47</td>
+    <td class="tg-c3ow">5.98</td>
+    <td class="tg-c3ow">6.73</td>
+    <td class="tg-c3ow">6.87</td>
+    <td class="tg-c3ow">5.72</td>
+    <td class="tg-c3ow">7.00</td>
+    <td class="tg-c3ow">6.61</td>
+    <td class="tg-c3ow">7.14</td>
+    <td class="tg-c3ow">7.01</td>
   </tr>
   <tr>
-    <td>erniebot-3.0（文心一言）</td>
-    <td>5.91</td>
-    <td>4.75</td>
-    <td>4.34</td>
-    <td>5.15</td>
-    <td>7.07</td>
-    <td>6.46</td>
-    <td>7.21</td>
-    <td>7.29</td>
-    <td>7.73</td>
-    <td>7.03</td>
-    <td>6.72</td>
+    <td class="tg-0pky">Claude 3 Haiku</td>
+    <td class="tg-c3ow">6.38</td>
+    <td class="tg-c3ow">5.58</td>
+    <td class="tg-c3ow">6.06</td>
+    <td class="tg-c3ow">5.10</td>
+    <td class="tg-c3ow">7.18</td>
+    <td class="tg-c3ow">7.15</td>
+    <td class="tg-c3ow">6.74</td>
+    <td class="tg-c3ow">7.58</td>
+    <td class="tg-c3ow">6.95</td>
+    <td class="tg-c3ow">7.26</td>
+    <td class="tg-c3ow">7.37</td>
   </tr>
-  <tr>
-    <td>chatglm-pro（智谱清言）</td>
-    <td>5.73</td>
-    <td>4.49</td>
-    <td>4.55</td>
-    <td>4.43</td>
-    <td>6.96</td>
-    <td>6.47</td>
-    <td>6.81</td>
-    <td>7.26</td>
-    <td>7.25</td>
-    <td>7.29</td>
-    <td>6.7</td>
-  </tr>
-  <tr>
-    <td>gpt-3.5-turbo-0613</td>
-    <td>5.68</td>
-    <td>4.85</td>
-    <td>4.90</td>
-    <td>4.79</td>
-    <td>6.52</td>
-    <td>6.01</td>
-    <td>5.6</td>
-    <td>6.97</td>
-    <td>7.27</td>
-    <td>6.98</td>
-    <td>6.29</td>
-  </tr>
-  <tr>
-    <td>spark_desk_v2（讯飞星火）</td>
-    <td>5.51</td>
-    <td>4.58</td>
-    <td>4.53</td>
-    <td>4.62</td>
-    <td>6.44</td>
-    <td>5.76</td>
-    <td>6.29</td>
-    <td>6.37</td>
-    <td>7.25</td>
-    <td>7.03</td>
-    <td>5.96</td>
-  </tr>
-  <tr>
-    <td>qwen-14b-chat</td>
-    <td>5.41</td>
-    <td>4.52</td>
-    <td>4.54</td>
-    <td>4.50</td>
-    <td>6.31</td>
-    <td>6.46</td>
-    <td>5.84</td>
-    <td>6.71</td>
-    <td>6.47</td>
-    <td>6.38</td>
-    <td>5.98</td>
-  </tr>
-  <tr>
-    <td>baichuan2-13b-chat</td>
-    <td>5.26</td>
-    <td>3.96</td>
-    <td>3.83</td>
-    <td>4.08</td>
-    <td>6.56</td>
-    <td>5.74</td>
-    <td>6.19</td>
-    <td>7.03</td>
-    <td>7.21</td>
-    <td>6.72</td>
-    <td>6.49</td>
-  </tr>
-  <tr>
-    <td>baichuan2-7b-chat</td>
-    <td>5.05</td>
-    <td>3.68</td>
-    <td>3.23</td>
-    <td>4.13</td>
-    <td>6.42</td>
-    <td>5.72</td>
-    <td>5.71</td>
-    <td>7.08</td>
-    <td>7.41</td>
-    <td>6.86</td>
-    <td>5.73</td>
-  </tr>
-  <tr>
-    <td>chatglm3-6b</td>
-    <td>5.01</td>
-    <td>3.70</td>
-    <td>3.44</td>
-    <td>3.95</td>
-    <td>6.33</td>
-    <td>6.13</td>
-    <td>5.72</td>
-    <td>6.92</td>
-    <td>7.11</td>
-    <td>6.31</td>
-    <td>5.77</td>
-  </tr>
-  <tr>
-    <td>internlm-20b</td>
-    <td>4.97</td>
-    <td>3.67</td>
-    <td>3.46</td>
-    <td>3.87</td>
-    <td>6.27</td>
-    <td>5.65</td>
-    <td>5.52</td>
-    <td>6.71</td>
-    <td>6.77</td>
-    <td>6.35</td>
-    <td>6.61</td>
-  </tr>
-  <tr>
-    <td>qwen-7b-chat</td>
-    <td>4.74</td>
-    <td>3.66</td>
-    <td>3.51</td>
-    <td>3.80</td>
-    <td>5.83</td>
-    <td>6.01</td>
-    <td>5.52</td>
-    <td>5.89</td>
-    <td>6.28</td>
-    <td>6.16</td>
-    <td>5.12</td>
-  </tr>
-  <tr>
-    <td>chatglm2-6b</td>
-    <td>4.57</td>
-    <td>3.32</td>
-    <td>3.28</td>
-    <td>3.35</td>
-    <td>5.83</td>
-    <td>5.24</td>
-    <td>5.12</td>
-    <td>6.68</td>
-    <td>6.83</td>
-    <td>5.95</td>
-    <td>5.15</td>
-  </tr>
-  <tr>
-    <td>Chinese-llama-2-7b-chat</td>
-    <td>3.44</td>
-    <td>2.42</td>
-    <td>2.13</td>
-    <td>2.70</td>
-    <td>4.46</td>
-    <td>4.59</td>
-    <td>4.29</td>
-    <td>4.39</td>
-    <td>4.64</td>
-    <td>4.91</td>
-    <td>3.94</td>
-  </tr>
-  <tr>
-    <td>internlm-chat-7b</td>
-    <td>3.24</td>
-    <td>2.10</td>
-    <td>2.34</td>
-    <td>1.85</td>
-    <td>4.39</td>
-    <td>3.43</td>
-    <td>3.76</td>
-    <td>5.37</td>
-    <td>4.63</td>
-    <td>5.01</td>
-    <td>4.15</td>
-  </tr>
-  <tr>
-    <td>llama-2-13b-Chinese-chat</td>
-    <td>3.14</td>
-    <td>2.35</td>
-    <td>2.12</td>
-    <td>2.58</td>
-    <td>3.93</td>
-    <td>4.31</td>
-    <td>2.9</td>
-    <td>4.34</td>
-    <td>3.52</td>
-    <td>4.04</td>
-    <td>4.47</td>
-  </tr>
-</tbody>
-</table>
+</tbody></table>
 
 ## 👏 引用
 
