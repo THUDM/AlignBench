@@ -186,7 +186,7 @@ AlignBench 的整体框架如上图所示，包括数据构建流程、体系化
   </tr></thead>
 <tbody>
   <tr>
-    <td class="tg-0pky">GPT-40</td>
+    <td class="tg-0pky">GPT-4o</td>
     <td class="tg-c3ow">8.38</td>
     <td class="tg-c3ow">8.44</td>
     <td class="tg-c3ow">8.62</td>
@@ -340,7 +340,7 @@ AlignBench 的整体框架如上图所示，包括数据构建流程、体系化
     <td class="tg-c3ow">8.32</td>
   </tr>
   <tr>
-    <td class="tg-0pky">Claude 3 Oous</td>
+    <td class="tg-0pky">Claude 3 Opus</td>
     <td class="tg-c3ow">7.53</td>
     <td class="tg-c3ow">7.19</td>
     <td class="tg-c3ow">7.27</td>
