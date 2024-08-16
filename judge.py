@@ -193,8 +193,7 @@ def main(args, config:Config):
         doc["score"] = judge.score
 
         with open(save_file, "a") as f:
-            f.write(json.dumps(doc, ensure_ascii=False))
-            f.write('\n')
+            f.write(json.dumps(doc, ensure_ascii=False) + '\n')
             f.close()
 
     if args.parallel == 1:
