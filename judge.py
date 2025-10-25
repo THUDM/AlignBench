@@ -9,6 +9,8 @@ import dataclasses
 from tqdm import tqdm
 from concurrent.futures import ThreadPoolExecutor
 from tenacity import retry, wait_random_exponential, stop_after_attempt
+from threading import Lock 
+_WRITE_LOCK = Lock() 
 
 @dataclasses.dataclass
 class Sample:
@@ -192,11 +194,12 @@ def main(args, config:Config):
         doc["rating"] = judge.rating
         doc["score"] = judge.score
 
-        with open(save_file, "a") as f:
-            f.write(json.dumps(doc, ensure_ascii=False))
-            f.write('\n')
-            f.close()
-
+        with _WRITE_LOCK: 
+            with open(save_file, "a") as f:
+                f.write(json.dumps(doc, ensure_ascii=False))
+                f.write('\n')
+                f.close()
+                
     if args.parallel == 1:
         for doc in tqdm(docs):
             run_sample_and_save(doc, save_file)
